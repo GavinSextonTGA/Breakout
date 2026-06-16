@@ -2,24 +2,39 @@ using UnityEngine;
 
 public class BallBehavior : MonoBehaviour
 {
+    [SerializeField] private float _launchForce = 7.0f;
+    [SerializeField] private float _speedIncrement = 1.05f;
+    private Rigidbody2D _rb;
 
-    public float CurrentSpeed = 7.0f;
-    
-    private int _xDirection ;
-    private int _yDirection;
+    [SerializeField, Range(0.0f, 1.0f)] float _paddleInfluence = 0.4f;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        _xDirection = Random.value < 0.5f ? 1 : -1;
-        _yDirection = Random.value < 0.5f ? 1 : -1;  
+        _rb = GetComponent<Rigidbody2D>();
+        // make sure that direction has a vector length of 1
+        Vector2 direction = Random.insideUnitCircle.normalized; 
+
+        if (Mathf.Abs(direction.y) > 0.35f)  
+        direction.y += 0.35f * Mathf.Sign(direction.y); 
+        direction = direction.normalized;  
+        _rb.AddForce(direction * _launchForce, ForceMode2D.Impulse);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnCollisionEnter2D(Collision2D other)
     {
-           transform.Translate(new Vector3(CurrentSpeed 
-        * _xDirection,CurrentSpeed 
-        * _yDirection, 0.0f )
-        * Time.deltaTime); 
+        if (other.gameObject.CompareTag("Bar"))
+        {
+            // Check if the paddle is moving
+            if(!Mathf.Approximately(other.rigidbody.linearVelocity.x, 0.0f))
+            {
+                Vector2 direction =_rb.linearVelocity *(1.0f - _paddleInfluence)
+                                + other.rigidbody.linearVelocity * _paddleInfluence;
+
+
+                _rb.linearVelocity = _rb.linearVelocity.magnitude * direction.normalized * _speedIncrement;
+            }
+        }
     }
+
 }
