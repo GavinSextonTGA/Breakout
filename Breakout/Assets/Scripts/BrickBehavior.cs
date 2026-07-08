@@ -12,7 +12,9 @@ private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("Ball"))
         {
-           Destroy(gameObject); 
+            Destroy(gameObject); 
+            GameBehavior.Score += 1;
+            Debug.Log(GameBehavior.Score);
         }
     }
 }

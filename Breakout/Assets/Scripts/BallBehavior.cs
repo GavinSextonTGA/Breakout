@@ -11,14 +11,10 @@ public class BallBehavior : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        
         _rb = GetComponent<Rigidbody2D>();
-        // make sure that direction has a vector length of 1
-        Vector2 direction = Random.insideUnitCircle.normalized; 
-
-        if (Mathf.Abs(direction.y) > 0.35f)  
-        direction.y += 0.35f * Mathf.Sign(direction.y); 
-        direction = direction.normalized;  
-        _rb.AddForce(direction * _launchForce, ForceMode2D.Impulse);
+        ResetBall();
+        
     }
 
     private void OnCollisionEnter2D(Collision2D other)
@@ -35,6 +31,18 @@ public class BallBehavior : MonoBehaviour
                 _rb.linearVelocity = _rb.linearVelocity.magnitude * direction.normalized * _speedIncrement;
             }
         }
+    }
+        private void ResetBall()
+    {
+        _rb.linearVelocity = Vector2.zero;
+        transform.position = Vector3.zero;
+        //transform.position = new UnityEngine.Vector3(0.0f,0.0f,transform.position.z);
+        // make sure that direction has a vector length of 1
+        Vector2 direction = Random.insideUnitCircle.normalized; 
+
+        if (Mathf.Abs(direction.y) > 0.35f)  
+        direction.y += 0.35f * Mathf.Sign(direction.y);   
+        _rb.AddForce(direction * _launchForce, ForceMode2D.Impulse);
     }
 
 }
